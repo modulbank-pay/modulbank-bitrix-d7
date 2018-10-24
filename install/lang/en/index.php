@@ -1,0 +1,4 @@
+<?php
+$MESS['MODULBANK_MODULE_NAME'] = "Modulbank";
+$MESS['MODULBANK_MODULE_DESCRIPTION'] = "Modulbank payments";
+$MESS['MODULBANK_MODULE_PARTNER_NAME'] = "JSC CB Modulbank";
