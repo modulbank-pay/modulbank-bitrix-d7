@@ -134,6 +134,10 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 
         $items = [];
 
+        $value = function ($field) use ($payment) {
+            return $this->getBusinessValue($payment, $field);
+        };
+
         foreach ($productsList->arResult as $product) {
             $vat_option = $this->vatIdToName($product['VAT_ID']);
 
@@ -141,7 +145,10 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
                 $product['NAME'],
                 $product['PRICE'],
                 $product['QUANTITY'],
-                $vat_option
+                $vat_option,
+                $value('SNO'),
+                $value('PAYMENT_OBJECT'),
+                $value('PAYMENT_METHOD')
             );
         }
 
@@ -159,8 +166,10 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
                 GetMessage('MODULBANK_DELIVERY_TXT'),
                 RoundEx($order->getDeliveryPrice(), 2),
                 1,
-                null,
-                $vat_option
+                $vat_option,
+                $value('SNO'),
+                'service',
+                $value('PAYMENT_METHOD')
             );
         }
 

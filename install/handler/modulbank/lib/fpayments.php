@@ -248,7 +248,9 @@ class PaymentForm {
         );
         $form['signature'] = $this->get_signature($form);
         $paramstr = http_build_query($form);
-        $ch = curl_init($this->get_transaction_info_url() . '?' . $paramstr);
+        $url = $this->get_transaction_info_url() . '?' . $paramstr;
+
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_USERAGENT, $this->plugininfo);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $result = curl_exec($ch);
@@ -341,32 +343,43 @@ abstract class AbstractCallbackHandler {
 
 
 class ReceiptItem {
-    const NO_VAT  = 'none';   # без НДС
-    const VAT_0   = 'vat0';    # НДС по ставке 0%
-    const VAT_10  = 'vat10';   # НДС чека по ставке 10%
-    const VAT_18  = 'vat18';   # НДС чека по ставке 18%
-    const VAT_20  = 'vat20';   # НДС чека по ставке 18%
-    const VAT_110 = 'vat110';  # НДС чека по расчетной ставке 10/110
-    const VAT_118 = 'vat118';  # НДС чека по расчетной ставке 18/118
+    const TAX_NO_NDS = 'none';  # без НДС;
+    const TAX_0_NDS = 'vat0';  # НДС по ставке 0%;
+    const TAX_10_NDS = 'vat10';  # НДС чека по ставке 10%;
+    const TAX_18_NDS = 'vat18';  # НДС чека по ставке 18%
+    const TAX_20_NDS = 'vat20';  # НДС чека по ставке 20%
+    const TAX_10_110_NDS = 'vat110';  # НДС чека по расчетной ставке 10/110;
+    const TAX_18_118_NDS = 'vat118';  # НДС чека по расчетной ставке 18/118.
+
 
     private $title;
     private $price;
     private $n;
     private $nds;
+    private $sno;
+    private $payment_object;
+    private $payment_method;
 
-    function __construct($title, $price, $n = 1, $nds = null) {
+
+    function __construct($title, $price, $n = 1, $nds = null, $sno=null, $payment_object=null, $payment_method=null) {
         $this->title = $title;
         $this->price = $price;
         $this->n = $n;
-        $this->nds = $nds ? $nds : self::NO_VAT;
+        $this->nds = $nds ? $nds : self::TAX_0_NDS;
+        $this->sno = $sno;
+        $this->payment_object = $payment_object;
+        $this->payment_method = $payment_method;
     }
 
     function as_dict() {
         return array(
             'quantity' => $this->n,
-            'price' => $this->price,
-            'vat' => $this->nds,
+            'price' =>  $this->price,
             'name' => $this->title,
+            'sno' => $this->sno,
+            'payment_object' => $this->payment_object,
+            'payment_method' => $this->payment_method,
+            'vat' => $this->nds
         );
     }
 

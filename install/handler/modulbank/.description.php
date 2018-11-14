@@ -34,6 +34,7 @@ $data = array(
                 'PROVIDER_KEY' => 'VALUE'
             ]
         ],
+
         'SUCCESS_URL' => [
             'NAME' => Loc::getMessage('MODULBANK_SUCCESS_URL'),
             'SORT' => 4,
@@ -134,6 +135,82 @@ $data = array(
             'DEFAULT' => [
                 'PROVIDER_VALUE' => Loc::getMessage('MODULBANK_DEFAULT_ORDER_DESCRIPTION'),
                 'PROVIDER_KEY' => 'VALUE'
+            ]
+        ],
+
+        // ДЛЯ КАССЫ
+
+        'SNO' => [
+            'NAME' => 'Система налогообложения',
+            'GROUP' => 'Параметры для кассы',//Loc::getMessage('MODULBANK_CONNECT_GROUP'),
+            'SORT' => 14,
+            'TYPE' => 'SELECT',
+            'INPUT' => [
+                'TYPE' => 'ENUM',
+                'OPTIONS' => [
+                    'osn' => 'Общая',
+                    'usn_income' => 'Упрощенная СН (доходы)',
+                    'usn_income_outcome' => 'Упрощенная СН (доходы минус расходы)',
+                    'envd' => 'Единый налог на вмененный доход',
+                    'esn' => 'Единый сельскохозяйственный налог',
+                    'patent' => 'Патентная СН'
+                ]
+            ],
+            'DEFAULT' => [
+                'PROVIDER_KEY' => 'VALUE',
+                'PROVIDER_VALUE' => 'osn'
+            ]
+        ],
+
+        'PAYMENT_OBJECT' => [
+            'NAME' => 'Предмет расчета',
+            'GROUP' => 'Параметры для кассы', //Loc::getMessage('MODULBANK_CONNECT_GROUP'),
+            'SORT' => 15,
+            'TYPE' => 'SELECT',
+            'INPUT' => [
+                'TYPE' => 'ENUM',
+                'OPTIONS' => [
+                    'commodity' => 'Товар',
+                    'excise' => 'Подакцизный товар',
+                    'job' => 'Работа',
+                    'service' => 'Услуга',
+                    'gambling_bet' => 'Ставка азартной игры',
+                    'gambling_prize' => 'Выигрыш азартной игры',
+                    'lottery' => 'Лотерейный билет',
+                    'lottery_prize' => 'Выигрыш лотереи',
+                    'intellectual_activity' => 'Предоставление результатов интеллектуальной деятельности',
+                    'payment' => 'Платеж',
+                    'agent_commission' => 'Агентское вознаграждение',
+                    'composite' => 'Составной предмет расчета',
+                    'another' => 'Другое'
+                ]
+            ],
+            'DEFAULT' => [
+                'PROVIDER_KEY' => 'VALUE',
+                'PROVIDER_VALUE' => 'commodity'
+            ]
+        ],
+
+        'PAYMENT_METHOD' => [
+            'NAME' => 'Метод платежа',
+            'GROUP' => 'Параметры для кассы', //Loc::getMessage('MODULBANK_CONNECT_GROUP'),
+            'SORT' => 16,
+            'TYPE' => 'SELECT',
+            'INPUT' => [
+                'TYPE' => 'ENUM',
+                'OPTIONS' => [
+                    'full_prepayment' => 'Предоплата 100%',
+                    'prepayment' => 'Предоплата',
+                    'advance' => 'Аванс',
+                    'full_payment' => 'Полный расчет',
+                    'partial_payment' => 'Частичный расчет и кредит',
+                    'credit' => 'Передача в кредит',
+                    'credit_payment' => 'Оплата кредита'
+                ]
+            ],
+            'DEFAULT' => [
+                'PROVIDER_KEY' => 'VALUE',
+                'PROVIDER_VALUE' => 'full_prepayment'
             ]
         ],
     ]
