@@ -50,10 +50,10 @@ if [[ -z $FROM_COMMIT ]]; then
 fi
 
 if [[ -z $VERSION ]]; then
-    VERSION=$(git describe --tags)
+    VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null ||:)
 
     if [[ -z $VERSION ]]; then
-        echo "Can't get a version (tag) for the current release"
+        echo "Can't get a version (tag) for the current release. Make sure you tagged the current revision."
         exit 1;
     fi
 fi
@@ -90,10 +90,10 @@ $FILE_LIST_COMMAND | while read f; do
 done
 
 # Install the php files with encoding convertion
-$FILE_LIST_COMMAND | grep "\.php$" | xargs -n1 -I@ sh -c "cat @ | iconv -t cp1251 > '$WORKDIR/@'"
+$FILE_LIST_COMMAND | grep "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) | iconv -t cp1251 > '$WORKDIR/@'"
 
 # Install the rest of files without conversion
-$FILE_LIST_COMMAND | grep -v "\.php$" | xargs -n1 -I@ sh -c "cat @ > '$WORKDIR/@'"
+$FILE_LIST_COMMAND | grep -v "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) > '$WORKDIR/@'"
 
 if $FILE_LIST_COMMAND | grep install.php; then
     cp include.php $WORKDIR/
