@@ -107,6 +107,15 @@ if get_release_contents | grep include.php; then
     cp include.php $WORKDIR/
 fi
 
+# Set release version
+cat > $WORKDIR/version.php <<END
+<?
+\$arModuleVersion = array(
+    "VERSION" => "$VERSION",
+    "VERSION_DATE" => "$(date +'%Y-%m-%d %H:%M:%S')"
+);
+END
+
 echo
 echo "Release contents:"
 (cd build && tar czvf $VERSION_DIR.tgz $VERSION_DIR)
