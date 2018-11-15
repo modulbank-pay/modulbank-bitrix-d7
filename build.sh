@@ -71,31 +71,39 @@ Going to create a release with the following options:
   from version: $FROM_COMMIT
 END
 
-rm -rf build && mkdir build
+rm -rf build
 
 if [[ -n $IS_INITIAL ]]; then
     VERSION_DIR=".last_version"
-    FILE_LIST_COMMAND='find install -type f'
 else
     VERSION_DIR=$VERSION
-    FILE_LIST_COMMAND="git diff --name-only $FROM_COMMIT HEAD"
 fi
+
+get_release_contents() {
+    if [[ -n $IS_INITIAL ]]; then
+        find install -type f
+    else
+        git diff --name-only $FROM_COMMIT HEAD | grep -E '^(install/|include.php)'
+    fi
+}
 
 WORKDIR="build/$VERSION_DIR"
 
+mkdir -p "$WORKDIR"
+
 # create directories for files that were been changed
-$FILE_LIST_COMMAND | while read f; do
+get_release_contents | while read f; do
     directory=$(dirname $f)
     mkdir -p "$WORKDIR/$directory"
 done
 
 # Install the php files with encoding convertion
-$FILE_LIST_COMMAND | grep "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) | iconv -t cp1251 > '$WORKDIR/@'"
+get_release_contents | grep "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) | iconv -t cp1251 > '$WORKDIR/@'"
 
 # Install the rest of files without conversion
-$FILE_LIST_COMMAND | grep -v "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) > '$WORKDIR/@'"
+get_release_contents | grep -v "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) > '$WORKDIR/@'"
 
-if $FILE_LIST_COMMAND | grep install.php; then
+if get_release_contents | grep include.php; then
     cp include.php $WORKDIR/
 fi
 
