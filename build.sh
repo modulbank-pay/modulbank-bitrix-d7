@@ -98,7 +98,7 @@ get_release_contents | while read f; do
 done
 
 # Install the php files with encoding convertion
-get_release_contents | grep "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) | iconv -t cp1251 > '$WORKDIR/@'"
+get_release_contents | grep "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) > '$WORKDIR/@'"
 
 # Install the rest of files without conversion
 get_release_contents | grep -v "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) > '$WORKDIR/@'"
