@@ -5,7 +5,6 @@ set -e
 IS_INITIAL=''
 FROM_COMMIT=''
 VERSION=''
-
 usage() {
     echo 'usage';
     cat <<-END
@@ -107,8 +106,9 @@ if get_release_contents | grep include.php; then
     cp include.php $WORKDIR/
 fi
 
+mkdir -p $WORKDIR/install
 # Set release version
-cat > $WORKDIR/version.php <<END
+cat > $WORKDIR/install/version.php <<END
 <?
 \$arModuleVersion = array(
     "VERSION" => "$VERSION",
@@ -116,13 +116,16 @@ cat > $WORKDIR/version.php <<END
 );
 END
 
+cp -rf install/index.php $WORKDIR/install/index.php
+
+
 echo
 echo "Release contents:"
-(cd build && tar czvf $VERSION_DIR.tgz $VERSION_DIR)
+(cd build && tar czvf $VERSION_DIR.tar.gz $VERSION_DIR)
 echo "-- end of the list --"
 
 cat <<END
 Done!
 
-Check out file build/$VERSION_DIR.tgz
+Check out file build/$VERSION_DIR.tar.gz
 END

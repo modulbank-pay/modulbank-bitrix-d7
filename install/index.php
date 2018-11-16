@@ -29,9 +29,9 @@ Class modulbank_payments extends CModule
         include(dirname(__FILE__) . "/version.php");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->MODULE_NAME = Loc::getMessage('MODULBANK_MODULE_NAME');
-        $this->MODULE_DESCRIPTION = Loc::getMessage('MODULBANK_MODULE_DESCRIPTION');
-        $this->PARTNER_NAME = Loc::getMessage('MODULBANK_PARTNER_NAME');
+        $this->MODULE_NAME = 'Модульбанк';
+        $this->MODULE_DESCRIPTION = 'Оплата через Модульбанк';
+        $this->PARTNER_NAME = 'АО КБ «Модульбанк»';
         $this->PARTNER_URI = "https://modulbank.ru/";
     }
 
