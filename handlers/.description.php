@@ -6,7 +6,6 @@ Loc::loadMessages(__FILE__);
 
 $description = Loc::getMessage('MODULBANK_DESCRIPTION');
 
-
 $data = array(
     'NAME' => Loc::getMessage('MODULBANK_TITLE'),
     'SORT' => 1,
@@ -40,7 +39,7 @@ $data = array(
             'SORT' => 4,
             'GROUP' => Loc::getMessage('MODULBANK_CONNECT_GROUP'),
             'DEFAULT' => [
-                'PROVIDER_VALUE' => '{schema}://{host}/personal/order/modulbank_finish.php',
+                'PROVIDER_VALUE' => '{schema}://{host}/bitrix/tools/sale_ps_success.php',
                 'PROVIDER_KEY' => 'VALUE'
             ]
         ],
@@ -49,7 +48,7 @@ $data = array(
             'SORT' => 5,
             'GROUP' => Loc::getMessage('MODULBANK_CONNECT_GROUP'),
             'DEFAULT' => [
-                'PROVIDER_VALUE' => '{schema}://{host}/personal/order/',
+                'PROVIDER_VALUE' => '{schema}://{host}/bitrix/tools/sale_ps_fail.php',
                 'PROVIDER_KEY' => 'VALUE'
             ]
         ],
@@ -58,7 +57,7 @@ $data = array(
             'SORT' => 6,
             'GROUP' => Loc::getMessage('MODULBANK_CONNECT_GROUP'),
             'DEFAULT' => [
-                'PROVIDER_VALUE' => '{schema}://{host}/personal/order/',
+                'PROVIDER_VALUE' => '{schema}://{host}/bitrix/tools/sale_ps_fail.php',
                 'PROVIDER_KEY' => 'VALUE'
             ]
         ],
@@ -138,22 +137,22 @@ $data = array(
             ]
         ],
 
-        // ДЛЯ КАССЫ
+        // FOR CASHBOX
 
         'SNO' => [
-            'NAME' => 'Система налогообложения',
-            'GROUP' => 'Параметры для кассы',//Loc::getMessage('MODULBANK_CONNECT_GROUP'),
+            'NAME' => Loc::getMessage('MODULBANK_CASHBOX_SNO'),
+            'GROUP' => Loc::getMessage('MODULBANK_CASHBOX_GROUP'),
             'SORT' => 14,
             'TYPE' => 'SELECT',
             'INPUT' => [
                 'TYPE' => 'ENUM',
                 'OPTIONS' => [
-                    'osn' => 'Общая',
-                    'usn_income' => 'Упрощенная СН (доходы)',
-                    'usn_income_outcome' => 'Упрощенная СН (доходы минус расходы)',
-                    'envd' => 'Единый налог на вмененный доход',
-                    'esn' => 'Единый сельскохозяйственный налог',
-                    'patent' => 'Патентная СН'
+                    'osn' => Loc::getMessage('MODULBANK_CASHBOX_SNO_OSN'),
+                    'usn_income' => Loc::getMessage('MODULBANK_CASHBOX_SNO_USN_INCOME'),
+                    'usn_income_outcome' => Loc::getMessage('MODULBANK_CASHBOX_SNO_USN_INCOME_OUTCOME'),
+                    'envd' => Loc::getMessage('MODULBANK_CASHBOX_SNO_ENVD'),
+                    'esn' => Loc::getMessage('MODULBANK_CASHBOX_SNO_ESN'),
+                    'patent' => Loc::getMessage('MODULBANK_CASHBOX_SNO_PATENT'),
                 ]
             ],
             'DEFAULT' => [
@@ -163,26 +162,26 @@ $data = array(
         ],
 
         'PAYMENT_OBJECT' => [
-            'NAME' => 'Предмет расчета',
-            'GROUP' => 'Параметры для кассы', //Loc::getMessage('MODULBANK_CONNECT_GROUP'),
+            'NAME' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT'),
+            'GROUP' => Loc::getMessage('MODULBANK_CASHBOX_GROUP'),
             'SORT' => 15,
             'TYPE' => 'SELECT',
             'INPUT' => [
                 'TYPE' => 'ENUM',
                 'OPTIONS' => [
-                    'commodity' => 'Товар',
-                    'excise' => 'Подакцизный товар',
-                    'job' => 'Работа',
-                    'service' => 'Услуга',
-                    'gambling_bet' => 'Ставка азартной игры',
-                    'gambling_prize' => 'Выигрыш азартной игры',
-                    'lottery' => 'Лотерейный билет',
-                    'lottery_prize' => 'Выигрыш лотереи',
-                    'intellectual_activity' => 'Предоставление результатов интеллектуальной деятельности',
-                    'payment' => 'Платеж',
-                    'agent_commission' => 'Агентское вознаграждение',
-                    'composite' => 'Составной предмет расчета',
-                    'another' => 'Другое'
+                    'commodity' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_COMMODITY'),
+                    'excise' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_EXCISE'),
+                    'job' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_JOB'),
+                    'service' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_SERVICE'),
+                    'gambling_bet' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_GAMBLING_BET'),
+                    'gambling_prize' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_GAMBLING_PRIZE'),
+                    'lottery' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_LOTTERY'),
+                    'lottery_prize' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_LOTTERY_PRIZE'),
+                    'intellectual_activity' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_INTELLECTUAL_ACTIVITY'),
+                    'payment' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_PAYMENT'),
+                    'agent_commission' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_AGENT_COMMISSION'),
+                    'composite' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_COMPOSITE'),
+                    'another' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT_ANOTHER'),
                 ]
             ],
             'DEFAULT' => [
@@ -192,20 +191,20 @@ $data = array(
         ],
 
         'PAYMENT_METHOD' => [
-            'NAME' => 'Метод платежа',
-            'GROUP' => 'Параметры для кассы', //Loc::getMessage('MODULBANK_CONNECT_GROUP'),
+            'NAME' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD'),
+            'GROUP' => Loc::getMessage('MODULBANK_CASHBOX_GROUP'),
             'SORT' => 16,
             'TYPE' => 'SELECT',
             'INPUT' => [
                 'TYPE' => 'ENUM',
                 'OPTIONS' => [
-                    'full_prepayment' => 'Предоплата 100%',
-                    'prepayment' => 'Предоплата',
-                    'advance' => 'Аванс',
-                    'full_payment' => 'Полный расчет',
-                    'partial_payment' => 'Частичный расчет и кредит',
-                    'credit' => 'Передача в кредит',
-                    'credit_payment' => 'Оплата кредита'
+                    'full_prepayment' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_FULL_PREPAYMENT'),
+                    'prepayment' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_PREPAYMENT'),
+                    'advance' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_ADVANCE'),
+                    'full_payment' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_FULL_PAYMENT'),
+                    'partial_payment' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_PARTIAL_PAYMENT'),
+                    'credit' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_CREDIT'),
+                    'credit_payment' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD_CREDIT_PAYMENT'),
                 ]
             ],
             'DEFAULT' => [

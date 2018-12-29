@@ -2,6 +2,10 @@
 
 namespace FPayments;
 
+use Bitrix\Main\Localization\Loc;
+
+Loc::loadMessages(__FILE__);
+
 if (!function_exists('mb_str_split')) {
     function mb_str_split($string, $split_length = 1, $encoding = null) {
         if (is_null($encoding)) {
@@ -102,9 +106,10 @@ class PaymentForm {
         $recurring_finish_date = ''
     ) {
         if (!$description) {
-            $description = "Заказ №$order_id";
+            $description = Loc::getMessage('MODULBANK_LIB_ORDER_NUMBER').$order_id;
         }
-        $form = array(
+		
+		$form = array(
             'testing'               => (int) $this->is_test,
             'merchant'              => $this->merchant_id,
             'unix_timestamp'        => time(),
@@ -126,7 +131,10 @@ class PaymentForm {
             'recurring_frequency'   => $recurring_frequency,
             'recurring_finish_date' => $recurring_finish_date,
         );
-        if ($receipt_items) {
+		
+		$form = \Bitrix\Main\Text\Encoding::convertEncoding($form, SITE_CHARSET, "UTF-8");
+		
+		if ($receipt_items) {
             if (!$receipt_contact) {
                 throw new FormError('receipt_contact required');
             }
@@ -213,7 +221,7 @@ class PaymentForm {
         $description = ''
     ){
         if (!$description) {
-            $description = "Заказ №$order_id";
+            $description = Loc::getMessage('MODULBANK_LIB_ORDER_NUMBER').$order_id;
         }
         $form = array(
             'testing'               => (int) $this->is_test,
@@ -227,6 +235,7 @@ class PaymentForm {
             'initial_transaction'   => $recurrind_tx_id,
             'recurring_token'       => $recurring_token,
         );
+		$form = \Bitrix\Main\Text\Encoding::convertEncoding($form, SITE_CHARSET, "UTF-8");
         $form['signature'] = $this->get_signature($form);
         $paramstr = http_build_query($form);
         $ch = curl_init($this->get_rebill_url());
@@ -343,13 +352,13 @@ abstract class AbstractCallbackHandler {
 
 
 class ReceiptItem {
-    const TAX_NO_NDS = 'none';  # без НДС;
-    const TAX_0_NDS = 'vat0';  # НДС по ставке 0%;
-    const TAX_10_NDS = 'vat10';  # НДС чека по ставке 10%;
-    const TAX_18_NDS = 'vat18';  # НДС чека по ставке 18%
-    const TAX_20_NDS = 'vat20';  # НДС чека по ставке 20%
-    const TAX_10_110_NDS = 'vat110';  # НДС чека по расчетной ставке 10/110;
-    const TAX_18_118_NDS = 'vat118';  # НДС чека по расчетной ставке 18/118.
+    const TAX_NO_NDS = 'none';  # without VAT
+    const TAX_0_NDS = 'vat0';  # VAT at 0%
+    const TAX_10_NDS = 'vat10';  # VAT check at a rate of 10%
+    const TAX_18_NDS = 'vat18';  # VAT check at a rate of 18%
+    const TAX_20_NDS = 'vat20';  # VAT check at a rate of 20%
+    const TAX_10_110_NDS = 'vat110';  # VAT check at settlement rate 10/110
+    const TAX_18_118_NDS = 'vat118';  # VAT check at settlement rate 18/118
 
 
     private $title;
@@ -375,15 +384,27 @@ class ReceiptItem {
         return array(
             'quantity' => $this->n,
             'price' =>  $this->price,
-            'name' => $this->title,
+            'name' => \Bitrix\Main\Text\Encoding::convertEncoding($this->title, SITE_CHARSET, "UTF-8"),
             'sno' => $this->sno,
             'payment_object' => $this->payment_object,
             'payment_method' => $this->payment_method,
             'vat' => $this->nds
         );
     }
-
-    function get_sum() {
+	
+	function get_price() {
+		return $this->price;
+	}
+	
+	function set_price($price) {
+		$this->price = $price;
+	}
+	
+	function get_quantity() {
+		return $this->n;
+	}
+	
+	function get_sum() {
         $result = $this->n * $this->price;
         return $result;
     }
