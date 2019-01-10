@@ -1,9 +1,8 @@
 <?php
 
 use \Bitrix\Main\IO\Directory;
-use \Bitrix\Main\Localization\Loc;
 
-Loc::loadMessages(__FILE__);
+IncludeModuleLangFile(__FILE__);
 
 Class modulbank_payments extends CModule
 {
@@ -28,9 +27,9 @@ Class modulbank_payments extends CModule
         include(dirname(__FILE__) . "/version.php");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->MODULE_NAME = Loc::getMessage('MODULBANK_MODULE_NAME');
-        $this->MODULE_DESCRIPTION = Loc::getMessage('MODULBANK_MODULE_DESCRIPTION');
-        $this->PARTNER_NAME = Loc::getMessage('MODULBANK_MODULE_PARTNER_NAME');
+        $this->MODULE_NAME = GetMessage('MODULBANK_MODULE_NAME');
+        $this->MODULE_DESCRIPTION = GetMessage('MODULBANK_MODULE_DESCRIPTION');
+        $this->PARTNER_NAME = GetMessage('MODULBANK_MODULE_PARTNER_NAME');
         $this->PARTNER_URI = "https://modulbank.ru/";
     }
 
