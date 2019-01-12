@@ -1,9 +1,8 @@
 <?php
 
 use \Bitrix\Main\IO\Directory;
-use \Bitrix\Main\Localization\Loc;
 
-Loc::loadMessages(__FILE__);
+IncludeModuleLangFile(__FILE__);
 
 Class modulbank_payments extends CModule
 {
@@ -18,8 +17,7 @@ Class modulbank_payments extends CModule
         # source dir/file -> destination dir/file
         # NB: please use destination path with a final directory/file name (not just a target dir to copy files to).
         # The destination path is what going to be deleted on uninstallation. Don't put system directories here.
-        ["handler/modulbank", "bitrix/php_interface/include/sale_payment/modulbank"],
-        ["personal_order/modulbank_finish.php", "personal/order/modulbank_finish.php"],
+        ["handlers", "bitrix/php_interface/include/sale_payment/modulbank"],
         ["images/modulbank.png", "bitrix/images/sale/sale_payments/modulbank.png"],
     ];
 
@@ -29,9 +27,9 @@ Class modulbank_payments extends CModule
         include(dirname(__FILE__) . "/version.php");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->MODULE_NAME = 'Модульбанк';
-        $this->MODULE_DESCRIPTION = 'Оплата через Модульбанк';
-        $this->PARTNER_NAME = 'АО КБ «Модульбанк»';
+        $this->MODULE_NAME = GetMessage('MODULBANK_MODULE_NAME');
+        $this->MODULE_DESCRIPTION = GetMessage('MODULBANK_MODULE_DESCRIPTION');
+        $this->PARTNER_NAME = GetMessage('MODULBANK_MODULE_PARTNER_NAME');
         $this->PARTNER_URI = "https://modulbank.ru/";
     }
 
@@ -50,31 +48,31 @@ Class modulbank_payments extends CModule
     {
         $srcRoot = dirname(__FILE__);
         $dstRoot = $_SERVER['DOCUMENT_ROOT'];
-        error_log("Installing files");
-        error_log("  source dir full path: $srcRoot");
-        error_log("  destination dir full path: $dstRoot");
+        //error_log("Installing files");
+        //error_log("  source dir full path: $srcRoot");
+        //error_log("  destination dir full path: $dstRoot");
 
         foreach ($this::INSTALL_SCHEMA as $pair) {
             $src = $srcRoot.'/'.$pair[0];
             $dst = $dstRoot.'/'.$pair[1];
-            error_log("Installing $src to $dst");
+            //error_log("Installing $src to $dst");
 
             $dstDir = is_dir($src) ? $dst : dirname($dst);
 
-            error_log(" -> Creating target dir $dstDir...");
+            //error_log(" -> Creating target dir $dstDir...");
             if (!Directory::createDirectory($dstDir)) {
-                error_log(" -> failed: ". error_get_last()['message']);
+                //error_log(" -> failed: ". error_get_last()['message']);
                 return false;
             }
-            error_log(" -> OK");
+            //error_log(" -> OK");
 
-            error_log(" -> Copying files...");
+            //error_log(" -> Copying files...");
 
             if (!CopyDirFiles($src, $dst, true, true)) {
-                error_log(" -> failed: ". error_get_last()['message']);
+                //error_log(" -> failed: ". error_get_last()['message']);
                 return false;
             }
-            error_log(" -> OK");
+            //error_log(" -> OK");
         }
 
         return true;
@@ -82,12 +80,12 @@ Class modulbank_payments extends CModule
 
     function UnInstallFiles()
     {
-        error_log("Uninstalling files");
+        //error_log("Uninstalling files");
         foreach ($this::INSTALL_SCHEMA as $pair) {
             $dst = $pair[1];
-            error_log(" -> removing $dst");
+            //error_log(" -> removing $dst");
             if (!DeleteDirFilesEx($dst)) {  // relative to DOCUMENT_ROOT path here
-                error_log(" -> failed: " . error_get_last()['message']);
+                //error_log(" -> failed: " . error_get_last()['message']);
                 return false;
             }
         }

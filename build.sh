@@ -81,8 +81,11 @@ fi
 get_release_contents() {
     if [[ -n $IS_INITIAL ]]; then
         find install -type f
+        find handlers -type f
+        find lang -type f
+        find lib -type f
     else
-        git diff --name-only $FROM_COMMIT HEAD | grep -E '^(install/|include.php)'
+        git diff --name-only $FROM_COMMIT HEAD | grep -E '^(handlers/|lang/|lib/|install/|include.php)'
     fi
 }
 
@@ -102,8 +105,12 @@ get_release_contents | grep "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ 
 # Install the rest of files without conversion
 get_release_contents | grep -v "\.php$" | xargs -n1 -I@ sh -c "(test -e @ && cat @ || echo) > '$WORKDIR/@'"
 
-if get_release_contents | grep include.php; then
-    cp include.php $WORKDIR/
+#if get_release_contents | grep include.php; then
+#    cp include.php $WORKDIR/
+#fi
+
+if [[ -n $IS_INITIAL ]]; then
+	cp include.php $WORKDIR/
 fi
 
 mkdir -p $WORKDIR/install

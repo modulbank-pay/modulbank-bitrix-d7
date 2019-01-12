@@ -4,6 +4,6 @@ namespace FPayments;
 
 class ModuleConfig {
     const HOST = 'https://pay.modulbank.ru';
-    const NAME = 'Модульбанк';
+    const NAME = 'Modulbank';
     const PREFIX = 'modulbank';
 }
