@@ -221,9 +221,12 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 	
 	private function getReceiptItems($payment)
     {
-        list($orderID, $_) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment(
-            $this->getBusinessValue($payment, 'ORDER_ID')
-        );
+        $orderID = $payment->getOrderId();
+		
+		if($orderID <= 0) {
+			return array();
+		}
+		
         CModule::IncludeModule("catalog");
 
         $order = Order::load($orderID);
