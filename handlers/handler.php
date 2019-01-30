@@ -375,11 +375,11 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 
     public function processRequest(Payment $payment, Request $request)
     {
-        $payment_id = intval($_GET['payment_id']);
+        $payment_id = htmlspecialchars($_GET['payment_id']);
         if (!$payment_id)
             die("No payment ID in GET arguments provided");
 
-        list($orderId, $paymentId) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment(intval($_GET['payment_id']));
+        list($orderId, $paymentId) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment(htmlspecialchars($_GET['payment_id']));
         if (! $orderId)
             die("No order found by payment_id=$payment_id");
 
@@ -400,12 +400,15 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 
     public function check(Payment $payment)
     {
-        $form = $this->getFpaymentsForm($payment);
-        $data = (array)$form->get_transaction_info($_GET['transaction_id']);
+        if(!empty($_GET['transaction_id'])) {
+			$form = $this->getFpaymentsForm($payment);
+			$data = (array)$form->get_transaction_info($_GET['transaction_id']);
 
-        if (array_key_exists('transaction_id', $data)) {
-            return $this->processPaymentResponse($payment, $data, true);
-        }
+			if (array_key_exists('transaction_id', $data)) {
+				return $this->processPaymentResponse($payment, $data, true);
+			}
+		}
+		
         return false;
     }
 
