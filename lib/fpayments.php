@@ -311,7 +311,7 @@ abstract class AbstractCallbackHandler {
 
         if (!$ff->is_signature_correct($data)) {
             $error = 'Incorrect "signature"';
-        } else if (!($order_id = (int) $data['order_id'])) {
+        } else if (!($order_id = $data['order_id'])) {
             $error = 'Empty "order_id"';
         } else if (!($order = $this->load_order($order_id))) {
             $error = 'Unknown order_id';

@@ -80,7 +80,7 @@ $data = array(
                 'PROVIDER_KEY' => 'PAYMENT'
             ]
         ],
-        'ORDER_ID' => [
+        'PAYMENT_ID' => [
             'NAME' => Loc::getMessage('MODULBANK_ORDER_ID'),
             'SORT' => 8,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
