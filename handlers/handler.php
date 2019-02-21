@@ -71,7 +71,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
         };
 		
 		$values = $form->compose(
-            RoundEx($value('PAYMENT_SHOULD_PAY'), 2),
+            RoundEx($value('AMOUNT'), 2),
             $value('CURRENCY'),
             $value('PAYMENT_ID'),
             $value('CLIENT_EMAIL'),
@@ -273,7 +273,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 			}
         }
 		
-		$this->distributionAmountOfProducts(RoundEx($value('PAYMENT_SHOULD_PAY'), 2), $items);
+		$this->distributionAmountOfProducts(RoundEx($value('AMOUNT'), 2), $items);
 		
 		return $items;
     }
