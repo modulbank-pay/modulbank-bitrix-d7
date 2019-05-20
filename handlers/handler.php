@@ -49,8 +49,8 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
     function getFpaymentsForm($payment)
     {
         return new PaymentForm(
-            $this->getBusinessValue($payment, 'MERCHANT_ID'),
-            $this->getBusinessValue($payment, 'SECRET_KEY'),
+            trim($this->getBusinessValue($payment, 'MERCHANT_ID')),
+            trim($this->getBusinessValue($payment, 'SECRET_KEY')),
             $this->getBusinessValue($payment, 'TEST_MODE') == 'Y'
         );
     }
@@ -71,19 +71,19 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
         };
 		
 		$values = $form->compose(
-            RoundEx($value('PAYMENT_SHOULD_PAY'), 2),
-            $value('CURRENCY'),
-            $value('PAYMENT_ID'),
-            $value('CLIENT_EMAIL'),
-            $value('CLIENT_FIRST_NAME') . ' ' . $value('CLIENT_LAST_NAME'),
-            $value('CLIENT_PHONE'),
-            $this->interpolateHostVars($value('SUCCESS_URL')) . '?payment_id=' . $value('PAYMENT_ID'),
-            $this->interpolateHostVars($value('FAIL_URL')),
-            $this->interpolateHostVars($value('CANCEL_URL')),
-            $this->interpolateHostVars('{schema}://{host}/bitrix/tools/sale_ps_result.php') . '?payment_id=' . $value('PAYMENT_ID'),
+            trim(RoundEx($value('AMOUNT'), 2)),
+            trim($value('CURRENCY')),
+            trim($value('PAYMENT_ID')),
+            trim($value('CLIENT_EMAIL')),
+            trim($value('CLIENT_FIRST_NAME') . ' ' . $value('CLIENT_LAST_NAME')),
+            trim($value('CLIENT_PHONE')),
+            trim($this->interpolateHostVars($value('SUCCESS_URL')) . '?payment_id=' . $value('PAYMENT_ID')),
+            trim($this->interpolateHostVars($value('FAIL_URL'))),
+            trim($this->interpolateHostVars($value('CANCEL_URL'))),
+            trim($this->interpolateHostVars('{schema}://{host}/bitrix/tools/sale_ps_result.php') . '?payment_id=' . $value('PAYMENT_ID')),
             '',
-            $this->interpolateOrderVars($value('ORDER_DESCRIPTION'), $payment),
-            empty($value('CLIENT_EMAIL')) ? $value('CLIENT_PHONE') : $value('CLIENT_EMAIL'),
+            trim($this->interpolateOrderVars($value('ORDER_DESCRIPTION'), $payment)),
+            trim(empty($value('CLIENT_EMAIL')) ? $value('CLIENT_PHONE') : $value('CLIENT_EMAIL')),
             $this->getReceiptItems($payment)
         );
 
@@ -273,7 +273,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 			}
         }
 		
-		$this->distributionAmountOfProducts(RoundEx($value('PAYMENT_SHOULD_PAY'), 2), $items);
+		$this->distributionAmountOfProducts(RoundEx($value('AMOUNT'), 2), $items);
 		
 		return $items;
     }
