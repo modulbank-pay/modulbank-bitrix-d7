@@ -1,2 +1,2 @@
 <?php
-$MESS['MODULBANK_PAY_BUTTON_TEXT'] = "Ïåðåéòè ê îïëàòå";
+$MESS['MODULBANK_PAY_BUTTON_TEXT'] = "ÐŸÐµÑ€ÐµÐ¹Ñ‚Ð¸ Ðº Ð¾Ð¿Ð»Ð°Ñ‚Ðµ";

@@ -49,8 +49,8 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
     function getFpaymentsForm($payment)
     {
         return new PaymentForm(
-            $this->getBusinessValue($payment, 'MERCHANT_ID'),
-            $this->getBusinessValue($payment, 'SECRET_KEY'),
+            trim($this->getBusinessValue($payment, 'MERCHANT_ID')),
+            trim($this->getBusinessValue($payment, 'SECRET_KEY')),
             $this->getBusinessValue($payment, 'TEST_MODE') == 'Y'
         );
     }
@@ -71,19 +71,19 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
         };
 		
 		$values = $form->compose(
-            RoundEx($value('PAYMENT_SHOULD_PAY'), 2),
-            $value('CURRENCY'),
-            $value('PAYMENT_ID'),
-            $value('CLIENT_EMAIL'),
-            $value('CLIENT_FIRST_NAME') . ' ' . $value('CLIENT_LAST_NAME'),
-            $value('CLIENT_PHONE'),
-            $this->interpolateHostVars($value('SUCCESS_URL')) . '?payment_id=' . $value('PAYMENT_ID'),
-            $this->interpolateHostVars($value('FAIL_URL')),
-            $this->interpolateHostVars($value('CANCEL_URL')),
-            $this->interpolateHostVars('{schema}://{host}/bitrix/tools/sale_ps_result.php') . '?payment_id=' . $value('PAYMENT_ID'),
+            trim(\Bitrix\Sale\PriceMaths::roundPrecision($value('AMOUNT'))),
+            trim($value('CURRENCY')),
+            trim($value('PAYMENT_ID')),
+            trim($value('CLIENT_EMAIL')),
+            trim($value('CLIENT_FIRST_NAME') . ' ' . $value('CLIENT_LAST_NAME')),
+            trim($value('CLIENT_PHONE')),
+            trim($this->interpolateHostVars($value('SUCCESS_URL')) . '?payment_id=' . $value('PAYMENT_ID')),
+            trim($this->interpolateHostVars($value('FAIL_URL'))),
+            trim($this->interpolateHostVars($value('CANCEL_URL'))),
+            trim($this->interpolateHostVars('{schema}://{host}/bitrix/tools/sale_ps_result.php') . '?payment_id=' . $value('PAYMENT_ID')),
             '',
-            $this->interpolateOrderVars($value('ORDER_DESCRIPTION'), $payment),
-            empty($value('CLIENT_EMAIL')) ? $value('CLIENT_PHONE') : $value('CLIENT_EMAIL'),
+            trim($this->interpolateOrderVars($value('ORDER_DESCRIPTION'), $payment)),
+            trim(empty($value('CLIENT_EMAIL')) ? $value('CLIENT_PHONE') : $value('CLIENT_EMAIL')),
             $this->getReceiptItems($payment)
         );
 
@@ -186,7 +186,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 				$items_sum += $item->get_sum();
 			}
 			
-			$items_sum = round($items_sum, 2);
+			$items_sum = \Bitrix\Sale\PriceMaths::roundPrecision($items_sum);
 			
 			if($items_sum > 0 && $items_sum != $amount) {
 				$sumDiff = $items_sum - $amount;
@@ -196,7 +196,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 				foreach($items as $item) {
 					$percent = $item->get_sum() / $items_sum;
 					$item_sum = $amount * $percent;
-					$item_price = round($item_sum / $item->get_quantity(), 2);
+					$item_price = \Bitrix\Sale\PriceMaths::roundPrecision($item_sum / $item->get_quantity());
 					$item->set_price($item_price);
 					
 					$new_items_sum += $item_price * $item->get_quantity();
@@ -205,12 +205,14 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 					}
 				}
 				
+				$new_items_sum = \Bitrix\Sale\PriceMaths::roundPrecision($new_items_sum);
+				
 				if($new_items_sum != $amount && $max_price_item !== null) {
 					if($new_items_sum > $amount) {
-						$item_price = round($max_price_item->get_price() + ($amount - $new_items_sum) / $max_price_item->get_quantity(), 2);
+						$item_price = \Bitrix\Sale\PriceMaths::roundPrecision($max_price_item->get_price() - ($new_items_sum - $amount) / $max_price_item->get_quantity());
 					}
 					else {
-						$item_price = round($max_price_item->get_price() - ($amount - $new_items_sum) / $max_price_item->get_quantity(), 2);
+						$item_price = \Bitrix\Sale\PriceMaths::roundPrecision($max_price_item->get_price() + ($amount - $new_items_sum) / $max_price_item->get_quantity());
 					}
 					
 					$max_price_item->set_price($item_price);
@@ -263,7 +265,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 
 				$items[] = new ReceiptItem(
 					Loc::getMessage('MODULBANK_DELIVERY_TXT'),
-					RoundEx($shipment->getPrice(), 2),
+					\Bitrix\Sale\PriceMaths::roundPrecision($shipment->getPrice()),
 					1,
 					$vat_option,
 					$value('SNO'),
@@ -273,7 +275,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 			}
         }
 		
-		$this->distributionAmountOfProducts(RoundEx($value('PAYMENT_SHOULD_PAY'), 2), $items);
+		$this->distributionAmountOfProducts(\Bitrix\Sale\PriceMaths::roundPrecision($value('AMOUNT')), $items);
 		
 		return $items;
     }
@@ -335,7 +337,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
             return $setError('Incorrect order ID');
         }
 
-        if (RoundEx($data['amount'], 2) != RoundEx($payment->getSum(), 2)) {
+        if (\Bitrix\Sale\PriceMaths::roundPrecision($data['amount']) != \Bitrix\Sale\PriceMaths::roundPrecision($payment->getSum())) {
             return $setError('Incorrect payment amount');
         }
 
@@ -375,11 +377,15 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
 
     public function processRequest(Payment $payment, Request $request)
     {
-        $payment_id = htmlspecialchars($_GET['payment_id']);
-        if (!$payment_id)
-            die("No payment ID in GET arguments provided");
+        $payment_id = htmlspecialchars($request->getQuery('payment_id'));
+        if(!$payment_id) {
+			$payment_id = htmlspecialchars($request->getPost('order_id'));
+			if(!$payment_id) {
+				die("No payment ID in GET or POST arguments provided");
+			}
+		}
 
-        list($orderId, $paymentId) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment(htmlspecialchars($_GET['payment_id']));
+        list($orderId, $paymentId) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment($payment_id);
         if (! $orderId)
             die("No order found by payment_id=$payment_id");
 
@@ -395,7 +401,7 @@ class modulbankHandler extends PaySystem\ServiceHandler implements PaySystem\ICh
         if (!$payment)
             die("Can't find payment");
 
-        return $this->processPaymentResponse($payment, $_POST);
+        return $this->processPaymentResponse($payment, $request->getPostList()->toArray());
     }
 
     public function check(Payment $payment)
