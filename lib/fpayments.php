@@ -144,7 +144,7 @@ class PaymentForm {
                 $items_sum += $item->get_sum();
                 $items_arr[] = $item->as_dict();
             }
-            $items_sum = round($items_sum, 2);
+            $items_sum = \Bitrix\Sale\PriceMaths::roundPrecision($items_sum);
             if ($items_sum != $amount) {
                 throw new FormError("Amounts mismatch: sum of cart items: ${items_sum}, order amount: ${amount}");
             }
@@ -405,8 +405,9 @@ class ReceiptItem {
 	}
 	
 	function get_sum() {
-        $result = $this->n * $this->price;
-        return $result;
+        $result = \Bitrix\Sale\PriceMaths::roundPrecision($this->n * $this->price);
+        
+		return $result;
     }
 
     static function guess_vat($rate) {
@@ -417,7 +418,7 @@ class ReceiptItem {
         } else if ($rate == 18) {
             return 'vat18';
         } else if ($rate == 20) {
-            return 'vat20';  // I can see the future
+            return 'vat20';
         }
     }
 }
