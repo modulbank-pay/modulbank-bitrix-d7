@@ -1,0 +1,5 @@
+<?php
+$MESS['MODULBANK_PAYMENT_IS_HOLD'] = "Платеж заморожен";
+$MESS['MODULBANK_PAYMENT_OR'] = "или";
+$MESS['MODULBANK_PAYMENT_HOLD_CONFIRM'] = "Подтвердить";
+$MESS['MODULBANK_PAYMENT_HOLD_CANCEL'] = "Отменить";

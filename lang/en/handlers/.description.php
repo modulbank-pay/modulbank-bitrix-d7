@@ -25,6 +25,11 @@ $MESS['MODULBANK_ORDER_DESCRIPTION'] = "Description of newly created orders";
 $MESS['MODULBANK_ORDER_DESCRIPTION_DESC'] = "Visible on payment page and in Modulbank control panel. {order_id} tag will be replaced with actual order number.";
 $MESS['MODULBANK_DEFAULT_ORDER_DESCRIPTION'] = "Order №{order_id}.";
 
+$MESS['MODULBANK_PAYMENT_MODE'] = "Payment Scheme";
+$MESS['MODULBANK_PAYMENT_MODE_DESC'] = "With two-stage payment, confirmation of payment of the order in the administrative part is required";
+$MESS['MODULBANK_PAYMENT_MODE_DEFAULT'] = "One-stage payment";
+$MESS['MODULBANK_PAYMENT_MODE_HOLD'] = "Two-stage payment";
+
 $MESS['MODULBANK_CASHBOX_GROUP'] = "Options for cashbox";
 
 $MESS['MODULBANK_CASHBOX_SNO'] = "Tax system";

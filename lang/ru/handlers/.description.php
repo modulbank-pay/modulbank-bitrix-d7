@@ -25,6 +25,11 @@ $MESS['MODULBANK_ORDER_DESCRIPTION'] = "Описание создаваемых 
 $MESS['MODULBANK_ORDER_DESCRIPTION_DESC'] = "Описание будет видно на платежной странице. Строка {order_id} будет заменена на номер заказа.";
 $MESS['MODULBANK_DEFAULT_ORDER_DESCRIPTION'] = "Оплата заказа №{order_id}.";
 
+$MESS['MODULBANK_PAYMENT_MODE'] = "Схема проведения платежа";
+$MESS['MODULBANK_PAYMENT_MODE_DESC'] = "При двухстадийной оплате требуется подтверждение оплаты заказа в административной части";
+$MESS['MODULBANK_PAYMENT_MODE_DEFAULT'] = "Одностадийная оплата";
+$MESS['MODULBANK_PAYMENT_MODE_HOLD'] = "Двухстадийная оплата";
+
 $MESS['MODULBANK_CASHBOX_GROUP'] = "Параметры для кассы";
 
 $MESS['MODULBANK_CASHBOX_SNO'] = "Система налогообложения";
