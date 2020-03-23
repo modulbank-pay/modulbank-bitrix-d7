@@ -19,6 +19,7 @@ Class modulbank_payments extends CModule
         # The destination path is what going to be deleted on uninstallation. Don't put system directories here.
         ["handlers", "bitrix/php_interface/include/sale_payment/modulbank"],
         ["images/modulbank.png", "bitrix/images/sale/sale_payments/modulbank.png"],
+		["tools/modulbank.payments", "bitrix/tools/modulbank.payments"],
     ];
 
     function __construct()
@@ -36,43 +37,38 @@ Class modulbank_payments extends CModule
 
     function InstallEvents()
     {
-        return true;
+        RegisterModuleDependences("main",  "OnAdminSaleOrderView", "modulbank.payments", "modulbankOrderEdit", "addHoldButtons");
+		RegisterModuleDependences("main",  "OnAdminSaleOrderEdit", "modulbank.payments", "modulbankOrderEdit", "addHoldButtons");
+		
+		return true;
     }
 
     function UnInstallEvents()
     {
-        return true;
+        UnRegisterModuleDependences("main",  "OnAdminSaleOrderView", "modulbank.payments", "modulbankOrderEdit", "addHoldButtons");
+		UnRegisterModuleDependences("main",  "OnAdminSaleOrderEdit", "modulbank.payments", "modulbankOrderEdit", "addHoldButtons");
+		
+		return true;
     }
 
     function InstallFiles($arParams = array())
     {
         $srcRoot = dirname(__FILE__);
         $dstRoot = $_SERVER['DOCUMENT_ROOT'];
-        //error_log("Installing files");
-        //error_log("  source dir full path: $srcRoot");
-        //error_log("  destination dir full path: $dstRoot");
-
+        
         foreach ($this::INSTALL_SCHEMA as $pair) {
             $src = $srcRoot.'/'.$pair[0];
             $dst = $dstRoot.'/'.$pair[1];
-            //error_log("Installing $src to $dst");
-
+        
             $dstDir = is_dir($src) ? $dst : dirname($dst);
 
-            //error_log(" -> Creating target dir $dstDir...");
             if (!Directory::createDirectory($dstDir)) {
-                //error_log(" -> failed: ". error_get_last()['message']);
                 return false;
             }
-            //error_log(" -> OK");
-
-            //error_log(" -> Copying files...");
-
+        
             if (!CopyDirFiles($src, $dst, true, true)) {
-                //error_log(" -> failed: ". error_get_last()['message']);
                 return false;
             }
-            //error_log(" -> OK");
         }
 
         return true;
@@ -80,12 +76,9 @@ Class modulbank_payments extends CModule
 
     function UnInstallFiles()
     {
-        //error_log("Uninstalling files");
         foreach ($this::INSTALL_SCHEMA as $pair) {
             $dst = $pair[1];
-            //error_log(" -> removing $dst");
             if (!DeleteDirFilesEx($dst)) {  // relative to DOCUMENT_ROOT path here
-                //error_log(" -> failed: " . error_get_last()['message']);
                 return false;
             }
         }
@@ -98,6 +91,7 @@ Class modulbank_payments extends CModule
         global $APPLICATION;
 
         $this->InstallFiles();
+        $this->InstallEvents();
 
         RegisterModule(self::MODULE_ID);
     }
@@ -108,6 +102,7 @@ Class modulbank_payments extends CModule
 
         UnRegisterModule(self::MODULE_ID);
 
+        $this->UnInstallEvents();
         $this->UnInstallFiles();
     }
 }

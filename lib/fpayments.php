@@ -76,6 +76,14 @@ class PaymentForm {
     function get_rebill_url() {
         return self::abs('/api/v1/rebill/');
     }
+	
+	function get_confirm_url() {
+        return self::abs('/api/v1/capture/');
+    }
+	
+	function get_cancel_url() {
+        return self::abs('/api/v1/refund/');
+    }
 
     function enable_callback_on_failure() {
         $this->callback_on_failure = true;
@@ -103,7 +111,8 @@ class PaymentForm {
         $receipt_contact = '',
         array $receipt_items = null,
         $recurring_frequency = '',
-        $recurring_finish_date = ''
+        $recurring_finish_date = '',
+		$useHold = false
     ) {
         if (!$description) {
             $description = Loc::getMessage('MODULBANK_LIB_ORDER_NUMBER').$order_id;
@@ -130,28 +139,85 @@ class PaymentForm {
             'sysinfo'               => $this->get_sysinfo(),
             'recurring_frequency'   => $recurring_frequency,
             'recurring_finish_date' => $recurring_finish_date,
+			'preauth'				=> (int) $useHold,
         );
 		
 		$form = \Bitrix\Main\Text\Encoding::convertEncoding($form, SITE_CHARSET, "UTF-8");
 		
+		if (!$receipt_contact) {
+			throw new FormError('receipt_contact required');
+		}
+		
+		$form['receipt_contact'] = $receipt_contact;
+		
 		if ($receipt_items) {
-            if (!$receipt_contact) {
-                throw new FormError('receipt_contact required');
-            }
-            $items_sum = 0;
-            $items_arr = array();
-            foreach ($receipt_items as $item) {
-                $items_sum += $item->get_sum();
-                $items_arr[] = $item->as_dict();
-            }
-            $items_sum = round($items_sum, 2);
-            if ($items_sum != $amount) {
-                throw new FormError("Amounts mismatch: sum of cart items: ${items_sum}, order amount: ${amount}");
-            }
-            $form['receipt_contact'] = $receipt_contact;
+			$items_arr = $this->check_receipt_items($receipt_items, $amount);
+                        
             $form['receipt_items'] = json_encode($items_arr);
-        };
+        }
+		
         $form['signature'] = $this->get_signature($form);
+		
+        return $form;
+    }
+	
+	function composeConfirm(
+		$transaction_id,
+        $amount,
+        $receipt_contact = '',
+        array $receipt_items = null
+    ) {
+        if (!$transaction_id) {
+			throw new FormError('transaction_id required');
+		}		
+		
+		$form = array(
+            'transaction'           => $transaction_id,
+			'amount'                => $amount,
+            'merchant'              => $this->merchant_id,
+			'salt'                  => $this->get_salt(32),
+            'unix_timestamp'        => time(),
+        );
+		
+		$form = \Bitrix\Main\Text\Encoding::convertEncoding($form, SITE_CHARSET, "UTF-8");
+		
+		if (!$receipt_contact) {
+			throw new FormError('receipt_contact required');
+		}
+		
+		$form['receipt_contact'] = $receipt_contact;
+		
+		if ($receipt_items) {
+			$items_arr = $this->check_receipt_items($receipt_items, $amount);
+                        
+            $form['receipt_items'] = json_encode($items_arr);
+        }
+		
+        $form['signature'] = $this->get_signature($form);
+		
+        return $form;
+    }
+	
+	function composeCancel(
+		$transaction_id,
+        $amount
+    ) {
+        if (!$transaction_id) {
+			throw new FormError('transaction_id required');
+		}		
+		
+		$form = array(
+            'transaction'           => $transaction_id,
+			'amount'                => $amount,
+            'merchant'              => $this->merchant_id,
+			'salt'                  => $this->get_salt(32),
+            'unix_timestamp'        => time(),
+        );
+		
+		$form = \Bitrix\Main\Text\Encoding::convertEncoding($form, SITE_CHARSET, "UTF-8");
+		
+		$form['signature'] = $this->get_signature($form);
+		
         return $form;
     }
 
@@ -162,6 +228,24 @@ class PaymentForm {
             'cms' => $this->cmsinfo,
         ));
     }
+	
+	private function check_receipt_items($receipt_items, $amount) {
+		$items_sum = 0;
+		$items_arr = array();
+		
+		foreach ($receipt_items as $item) {
+			$items_sum += $item->get_sum();
+			$items_arr[] = $item->as_dict();
+		}
+		
+		$items_sum = \Bitrix\Sale\PriceMaths::roundPrecision($items_sum);
+		
+		if ($items_sum != $amount) {
+			throw new FormError("Amounts mismatch: sum of cart items: ${items_sum}, order amount: ${amount}");
+		}
+		
+		return $items_arr;
+	}
 
     function is_signature_correct(array $form) {
         if (!array_key_exists('signature', $form)) {
@@ -277,6 +361,56 @@ class PaymentForm {
         }
         return $data['transaction'];
     }
+	
+	function send_confirm_request($form) {
+        $url = $this->get_confirm_url();
+		
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->plugininfo);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $form);
+        $result = curl_exec($ch);
+		
+        if (curl_error($ch)) {
+            error_log("Error while requesting transaction info: ".curl_error($ch));
+            return;
+        }
+        curl_close($ch);
+
+        $data = json_decode($result, true);
+		
+        if ($data['status'] != 'ok') {
+            return;
+        }
+		
+        return $data['transaction'];
+    }
+	
+	function send_cancel_request($form) {
+        $url = $this->get_cancel_url();
+		
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->plugininfo);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $form);
+        $result = curl_exec($ch);
+		
+        if (curl_error($ch)) {
+            error_log("Error while requesting transaction info: ".curl_error($ch));
+            return;
+        }
+        curl_close($ch);
+
+        $data = json_decode($result, true);
+		
+        if ($data['status'] != 'ok') {
+            return;
+        }
+		
+        return $data['refund'];
+    }
 }
 
 
@@ -371,6 +505,28 @@ class ReceiptItem {
 
 
     function __construct($title, $price, $n = 1, $nds = null, $sno=null, $payment_object=null, $payment_method=null) {
+        if(strlen($title) > 128) {
+            throw new FormError('Product name length cannot exceed 128 characters');
+        }
+        
+        if($price >= 100000000) {
+            throw new FormError('The price of the goods cannot be more than 99999999');
+        }
+        
+        $tPrice = explode('.', (string)$price);
+        if(strlen($tPrice[1]) > 2) {
+            throw new FormError('The number of characters in the fractional part of the price of the goods cannot be more than 2');
+        }
+        
+        if($n >= 100000) {
+            throw new FormError('The quantity of goods cannot be more than 99999');
+        }
+        
+        $tQuantity = explode('.', (string)$n);
+        if(strlen($tQuantity[1]) > 3) {
+            throw new FormError('The number of characters in the fractional part of the quantity of goods cannot be more than 3');
+        }
+        
         $this->title = $title;
         $this->price = $price;
         $this->n = $n;
@@ -405,8 +561,9 @@ class ReceiptItem {
 	}
 	
 	function get_sum() {
-        $result = $this->n * $this->price;
-        return $result;
+        $result = \Bitrix\Sale\PriceMaths::roundPrecision($this->n * $this->price);
+        
+		return $result;
     }
 
     static function guess_vat($rate) {
@@ -417,7 +574,7 @@ class ReceiptItem {
         } else if ($rate == 18) {
             return 'vat18';
         } else if ($rate == 20) {
-            return 'vat20';  // I can see the future
+            return 'vat20';
         }
     }
 }

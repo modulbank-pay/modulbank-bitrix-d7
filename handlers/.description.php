@@ -73,7 +73,7 @@ $data = array(
         'CURRENCY' => [
             'NAME' => Loc::getMessage('MODULBANK_CURRENCY'),
             'DESCRIPTION' => Loc::getMessage('MODULBANK_CURRENCY_DESC'),
-            'SORT' => 7,
+            'SORT' => 8,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
             'DEFAULT' => [
                 'PROVIDER_VALUE' => 'CURRENCY',
@@ -82,7 +82,7 @@ $data = array(
         ],
         'PAYMENT_ID' => [
             'NAME' => Loc::getMessage('MODULBANK_ORDER_ID'),
-            'SORT' => 8,
+            'SORT' => 9,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
             'DEFAULT' => [
                 'PROVIDER_VALUE' => 'ID',
@@ -101,7 +101,7 @@ $data = array(
         ],
         'CLIENT_LAST_NAME' => [
             'NAME' => Loc::getMessage('MODULBANK_CLIENT_LAST_NAME'),
-            'SORT' => 10,
+            'SORT' => 11,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
             'DEFAULT' => [
                 'PROVIDER_VALUE' => 'LAST_NAME',
@@ -110,7 +110,7 @@ $data = array(
         ],
         'CLIENT_PHONE' => [
             'NAME' => Loc::getMessage('MODULBANK_CLIENT_PHONE'),
-            'SORT' => 11,
+            'SORT' => 12,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
             'DEFAULT' => [
                 'PROVIDER_VALUE' => 'PERSONAL_MOBILE',
@@ -119,7 +119,7 @@ $data = array(
         ],
         'CLIENT_EMAIL' => [
             'NAME' => Loc::getMessage('MODULBANK_CLIENT_EMAIL'),
-            'SORT' => 12,
+            'SORT' => 13,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
             'DEFAULT' => [
                 'PROVIDER_VALUE' => 'EMAIL',
@@ -129,20 +129,39 @@ $data = array(
         'ORDER_DESCRIPTION' => [
             'NAME' => Loc::getMessage('MODULBANK_ORDER_DESCRIPTION'),
             'DESCRIPTION' => Loc::getMessage('MODULBANK_ORDER_DESCRIPTION_DESC'),
-            'SORT' => 13,
+            'SORT' => 14,
             'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
             'DEFAULT' => [
                 'PROVIDER_VALUE' => Loc::getMessage('MODULBANK_DEFAULT_ORDER_DESCRIPTION'),
                 'PROVIDER_KEY' => 'VALUE'
             ]
         ],
+		
+		'PAYMENT_MODE' => [
+			'NAME' => Loc::getMessage('MODULBANK_PAYMENT_MODE'),
+            'DESCRIPTION' => Loc::getMessage('MODULBANK_PAYMENT_MODE_DESC'),
+            'SORT' => 15,
+            'GROUP' => Loc::getMessage('MODULBANK_ORDER_GROUP'),
+			'TYPE' => 'SELECT',
+			'INPUT' => [
+                'TYPE' => 'ENUM',
+                'OPTIONS' => [
+                    'default' => Loc::getMessage('MODULBANK_PAYMENT_MODE_DEFAULT'),
+                    'hold' => Loc::getMessage('MODULBANK_PAYMENT_MODE_HOLD'),
+                ]
+            ],
+            'DEFAULT' => [
+                'PROVIDER_KEY' => 'VALUE',
+                'PROVIDER_VALUE' => 'default'
+            ]
+		],
 
         // FOR CASHBOX
 
         'SNO' => [
             'NAME' => Loc::getMessage('MODULBANK_CASHBOX_SNO'),
             'GROUP' => Loc::getMessage('MODULBANK_CASHBOX_GROUP'),
-            'SORT' => 14,
+            'SORT' => 16,
             'TYPE' => 'SELECT',
             'INPUT' => [
                 'TYPE' => 'ENUM',
@@ -164,7 +183,7 @@ $data = array(
         'PAYMENT_OBJECT' => [
             'NAME' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_OBJECT'),
             'GROUP' => Loc::getMessage('MODULBANK_CASHBOX_GROUP'),
-            'SORT' => 15,
+            'SORT' => 17,
             'TYPE' => 'SELECT',
             'INPUT' => [
                 'TYPE' => 'ENUM',
@@ -193,7 +212,7 @@ $data = array(
         'PAYMENT_METHOD' => [
             'NAME' => Loc::getMessage('MODULBANK_CASHBOX_PAYMENT_METHOD'),
             'GROUP' => Loc::getMessage('MODULBANK_CASHBOX_GROUP'),
-            'SORT' => 16,
+            'SORT' => 18,
             'TYPE' => 'SELECT',
             'INPUT' => [
                 'TYPE' => 'ENUM',
