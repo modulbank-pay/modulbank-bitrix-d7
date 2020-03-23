@@ -505,6 +505,28 @@ class ReceiptItem {
 
 
     function __construct($title, $price, $n = 1, $nds = null, $sno=null, $payment_object=null, $payment_method=null) {
+        if(strlen($title) > 128) {
+            throw new FormError('Product name length cannot exceed 128 characters');
+        }
+        
+        if($price >= 100000000) {
+            throw new FormError('The price of the goods cannot be more than 99999999');
+        }
+        
+        $tPrice = explode('.', (string)$price);
+        if(strlen($tPrice[1]) > 2) {
+            throw new FormError('The number of characters in the fractional part of the price of the goods cannot be more than 2');
+        }
+        
+        if($n >= 100000) {
+            throw new FormError('The quantity of goods cannot be more than 99999');
+        }
+        
+        $tQuantity = explode('.', (string)$n);
+        if(strlen($tQuantity[1]) > 3) {
+            throw new FormError('The number of characters in the fractional part of the quantity of goods cannot be more than 3');
+        }
+        
         $this->title = $title;
         $this->price = $price;
         $this->n = $n;
